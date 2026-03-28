@@ -1,6 +1,6 @@
 {
-    "android_sdk": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/sdk/android-sdk.tar.xz",
-    "cmdline_tools": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/sdk/cmdline-tools.tar.xz",
+    "android_sdk": "https://github.com/git-jr/androidide-tools/releases/download/sdk/android-sdk.tar.xz",
+    "cmdline_tools": "https://github.com/git-jr/androidide-tools/releases/download/sdk/cmdline-tools.tar.xz",
 
 
     "build_tools": {
@@ -62,7 +62,7 @@
 
     
     "jdk_11": {
-        "aarch64": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/jdk-11/jdk11-aarch64.tar.xz",
-        "arm": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/jdk-11/jdk11-aarch32.tar.xz"
+        "aarch64": "https://github.com/git-jr/androidide-tools/releases/download/jdk-11/jdk11-aarch64.tar.xz",
+        "arm": "https://github.com/git-jr/androidide-tools/releases/download/jdk-11/jdk11-aarch32.tar.xz"
     }
 }
