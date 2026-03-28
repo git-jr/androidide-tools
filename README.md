@@ -1,41 +1,112 @@
-# Build Tools for [AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE).
-<a href="https://github.com/AndroidIDEOfficial/AndroidIDE"><img src="https://androidide.com/github/img/androidide.php?part&for-the-badge"/></a><br>
+# Build Tools for [AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)
 
-This repository includes JDK 11 (now _**deprecated**_), Android SDK and tools for AndroidIDE. An installation script is also available which you can use to easily install the tools.
-```
-AndroidIDE build tools installer
-This script helps you easily install build tools in AndroidIDE.
+Fork de [AndroidIDEOfficial/androidide-tools](https://github.com/AndroidIDEOfficial/androidide-tools), mantido para dar continuidade ao suporte de novas versões do Android SDK após o arquivamento do repositório original.
 
-Usage:
-./scripts/idesetup -s 34.0.4 -c -j 17
-This will install Android SDK 34.0.4 with command line tools and JDK 17.
+Todas as releases estão hospedadas neste fork. O `manifest.json` e o `scripts/idesetup` foram atualizados para apontar para `git-jr/androidide-tools`.
 
-Options :
--i   Set the installation directory. Defaults to $HOME.
--s   Android SDK version to download.
--c   Download Android SDK with command line tools.
--m   Manifest file URL. Defaults to 'manifest.json' in 'androidide-tools' GitHub repository.
--j   OpenJDK version to install. Values can be '17' or '21'
+---
 
-For testing purposes:
--a   CPU architecture. Extracted using 'uname -m' by default.
--p   Package manager. Defaults to 'pkg'.
--l   Name of curl package that will be installed before starting installation process. Defaults to 'libcurl'.
+## Uso
 
--h   Prints this message.
+No terminal do AndroidIDE:
+
+```bash
+idesetup -c
 ```
 
-## Installing in AndroidIDE
-- Open the AndroidIDE terminal.
-- Start the installation process by executing : `idesetup -c`
-- After you execute the command, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process.
+Para uma versão específica:
 
-The default configuration is enough for most users. If you want to configure the installation process (like downloading a different SDK tools version), you can do so by using the options provided by the script.
+```bash
+idesetup -s 35.0.2 -c -j 17
+```
 
-Execute the script with `-h` option to see a list of options that you can use.
+### Opções do script
 
-## Download
-You can manually download and install these tools from [releases](https://github.com/AndroidIDEOfficial/androidide-build-tools/releases). A step-by-step guide is available on [our blog](https://androidide.com/blogs/getting-started/2023/07/17/manually-installing-build-tools-in-androidide/).
+```
+-i   Diretório de instalação. Padrão: $HOME
+-s   Versão do Android SDK a baixar
+-c   Baixar com command line tools
+-m   URL do manifest. Padrão: manifest.json deste repositório
+-j   Versão do OpenJDK: '17' ou '21'
+-a   Arquitetura da CPU (detectada automaticamente via uname -m)
+-p   Package manager. Padrão: pkg
+-h   Exibe esta ajuda
+```
 
-## Thanks to
-- @Lzhiyong for [sdk-tools](https://github.com/Lzhiyong/sdk-tools).
+---
+
+## Versões disponíveis
+
+| Versão | Arquiteturas | Release |
+|---|---|---|
+| 35.0.2 | aarch64, arm, x86_64 | [v35.0.2](https://github.com/git-jr/androidide-tools/releases/tag/v35.0.2) |
+| 34.0.4 | aarch64, arm, x86_64 | [v34.0.4](https://github.com/git-jr/androidide-tools/releases/tag/v34.0.4) |
+| 34.0.3 | aarch64, arm | [v34.0.3](https://github.com/git-jr/androidide-tools/releases/tag/v34.0.3) |
+| 34.0.1 | aarch64, arm | [v34.0.1](https://github.com/git-jr/androidide-tools/releases/tag/v34.0.1) |
+| 34.0.0 | aarch64, arm | [v34.0.0](https://github.com/git-jr/androidide-tools/releases/tag/v34.0.0) |
+| 33.0.3 | aarch64, arm | [v33.0.3](https://github.com/git-jr/androidide-tools/releases/tag/v33.0.3) |
+| 33.0.1 | aarch64, arm | [v33.0.1](https://github.com/git-jr/androidide-tools/releases/tag/v33.0.1) |
+
+---
+
+## Adicionando suporte a uma nova versão
+
+### Pré-requisito
+
+Verifique se [lzhiyong/android-sdk-tools](https://github.com/lzhiyong/android-sdk-tools/releases) já publicou os binários cross-compilados para a versão desejada.
+
+### 1. Reempacotar os binários
+
+```bash
+cd scripts
+
+./repackage.sh X.Y.Z aarch64
+./repackage.sh X.Y.Z arm
+./repackage.sh X.Y.Z x86_64
+```
+
+O script baixa o `.zip` do Lzhiyong e gera 6 arquivos `.tar.xz` no formato esperado pelo AndroidIDE.
+
+### 2. Criar release e subir os arquivos
+
+```bash
+gh release create vX.Y.Z \
+  build-tools-X.Y.Z-aarch64.tar.xz \
+  build-tools-X.Y.Z-arm.tar.xz \
+  build-tools-X.Y.Z-x86_64.tar.xz \
+  platform-tools-X.Y.Z-aarch64.tar.xz \
+  platform-tools-X.Y.Z-arm.tar.xz \
+  platform-tools-X.Y.Z-x86_64.tar.xz \
+  --repo git-jr/androidide-tools \
+  --title "vX.Y.Z" \
+  --notes "Android SDK build tools and platform tools X.Y.Z."
+```
+
+### 3. Atualizar `manifest.json`
+
+Adicionar entradas `_X_Y_Z` em `build_tools` e `platform_tools` para cada arquitetura disponível, apontando para os assets do release criado acima.
+
+### 4. Atualizar o default em `scripts/idesetup`
+
+```bash
+sdkver_org=X.Y.Z
+```
+
+### 5. Commit e push
+
+```bash
+git add manifest.json scripts/idesetup
+git commit -m "add: support for build-tools X.Y.Z"
+git push
+```
+
+### 6. Atualizar o AndroidIDE
+
+Veja `ANDROID_35_36_SUPPORT.md` no repositório AndroidIDE para as mudanças necessárias em `Sdk.kt`, `ideSetupConfig.kt` e `idesetup.sh`.
+
+---
+
+## Créditos
+
+- [@Lzhiyong](https://github.com/Lzhiyong) por [android-sdk-tools](https://github.com/lzhiyong/android-sdk-tools) — binários cross-compilados para ARM.
+- [AndroidIDEOfficial](https://github.com/AndroidIDEOfficial) pelo repositório e scripts originais.
